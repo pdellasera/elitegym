@@ -50,13 +50,13 @@ export default function WelcomeSection() {
 
           {/* Right — Text Content */}
           <div>
-            <span className={`text-primary font-semibold text-sm tracking-wide mb-4 block transition-all duration-700 delay-200 ${
+            <span className={`text-primary font-bold text-base md:text-lg lg:text-xl tracking-wide mb-4 block uppercase transition-all duration-700 delay-200 ${
               visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}>
               Bienvenido a Elite Gym
             </span>
 
-            <h2 className={`text-3xl md:text-h2 lg:text-h1 font-bold text-text-light leading-tight mb-6 transition-all duration-700 delay-300 ${
+            <h2 className={`text-3xl md:text-h2 font-bold text-text-light leading-tight mb-6 transition-all duration-700 delay-300 ${
               visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}>
               Supera Tus Límites Y Desbloquea Tu Fuerza

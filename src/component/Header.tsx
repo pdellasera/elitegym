@@ -53,13 +53,13 @@ export default function Header({ onContactClick, onJoinClick }: HeaderProps) {
                             Clases
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                         </a>
-                        <a href="#" className="text-text-gray hover:text-primary text-[13px] font-medium uppercase tracking-wider transition-colors flex items-center gap-1">
+                        {/* <a href="#" className="text-text-gray hover:text-primary text-[13px] font-medium uppercase tracking-wider transition-colors flex items-center gap-1">
                             Páginas
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                         </a>
                         <a href="#blog" className="text-text-gray hover:text-primary text-[13px] font-medium uppercase tracking-wider transition-colors">
                             Blog
-                        </a>
+                        </a> */}
                         <button onClick={() => { onContactClick?.(); }} className="text-text-gray hover:text-primary text-[13px] font-medium uppercase tracking-wider transition-colors cursor-pointer bg-transparent border-none">
                             Contacto
                         </button>
@@ -95,7 +95,7 @@ export default function Header({ onContactClick, onJoinClick }: HeaderProps) {
                         <a href="#about" className="block text-text-gray hover:text-primary text-sm font-medium uppercase tracking-wider py-3">Nosotros</a>
                         <a href="#horarios" className="block text-text-gray hover:text-primary text-sm font-medium uppercase tracking-wider py-3">Horarios</a>
                         <a href="#programs" className="block text-text-gray hover:text-primary text-sm font-medium uppercase tracking-wider py-3">Clases</a>
-                        <a href="#blog" className="block text-text-gray hover:text-primary text-sm font-medium uppercase tracking-wider py-3">Blog</a>
+                        {/* <a href="#blog" className="block text-text-gray hover:text-primary text-sm font-medium uppercase tracking-wider py-3">Blog</a> */}
                         <button onClick={() => { setIsOpen(false); onContactClick?.(); }} className="block w-full text-left text-text-gray hover:text-primary text-sm font-medium uppercase tracking-wider py-3 cursor-pointer bg-transparent border-none">Contacto</button>
                         <button
                             onClick={() => { setIsOpen(false); onJoinClick?.(); }}

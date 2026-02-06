@@ -101,7 +101,7 @@ export default function Home({ onNavigate }: HomeProps) {
                 />
                 <div className="absolute inset-0 bg-primary/80" />
                 <div className="relative z-10 max-w-2xl mx-auto px-6 md:px-12 text-center">
-                    <h2 className={`text-h2 md:text-h1 font-bold text-text-light mb-6 transition-all duration-700 ${ctaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                    <h2 className={`text-h2 md:text-h1 font-bold text-text-light mb-4 transition-all duration-700 ${ctaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                         }`}>
                         ¿Listo para dar el primer paso hacia tus metas fitness?
                     </h2>
@@ -125,7 +125,7 @@ export default function Home({ onNavigate }: HomeProps) {
 
                     {/* Centered Header */}
                     <div className="text-center mb-16 md:mb-20">
-                        <div className={`text-primary font-semibold text-xs md:text-sm uppercase tracking-widest mb-4 transition-all duration-700 ${aboutVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                        <div className={`text-primary font-bold text-base md:text-lg lg:text-xl uppercase tracking-widest mb-4 transition-all duration-700 ${aboutVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                             }`}>
                             ¿Por Qué Elegirnos?
                         </div>
@@ -216,7 +216,7 @@ export default function Home({ onNavigate }: HomeProps) {
 
                     {/* Section header — centered */}
                     <div className="text-center mb-14 md:mb-20">
-                        <div className={`text-primary font-semibold text-xs md:text-sm uppercase tracking-widest mb-4 transition-all duration-700 ${horariosVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                        <div className={`text-primary font-bold text-base md:text-lg lg:text-xl uppercase tracking-widest mb-4 transition-all duration-700 ${horariosVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                             }`}>
                             Horarios de Apertura
                         </div>
