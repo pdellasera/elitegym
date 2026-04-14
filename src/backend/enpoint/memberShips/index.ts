@@ -1,0 +1,1 @@
+export const GET_MEMBERSHIPS_ENDPOINT = '/memberships/initial-data';

@@ -26,14 +26,13 @@ export default function Layout({ children }: LayoutProps) {
 
   const handlePlanContinue = (plan: Plan) => {
     setSelectedPlan(plan)
-    setPlanOpen(false)
-    // Small delay so close animation finishes before opening next modal
-    setTimeout(() => setJoinOpen(true), 320)
+    setJoinOpen(true)
+    setTimeout(() => setPlanOpen(false), 100)
   }
 
   const handleBackToPlan = () => {
-    setJoinOpen(false)
-    setTimeout(() => setPlanOpen(true), 320)
+    setPlanOpen(true)
+    setTimeout(() => setJoinOpen(false), 100)
   }
 
   const handleJoinClose = () => {

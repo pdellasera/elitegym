@@ -178,9 +178,9 @@ export default function Home({ onNavigate }: HomeProps) {
                                     <span className="text-white text-2xl font-bold">2</span>
                                 </div>
                                 <div>
-                                    <h3 className="text-text-light font-bold text-lg mb-2">Equipamiento Moderno</h3>
+                                    <h3 className="text-text-light font-bold text-lg mb-2">Equipamiento Completo</h3>
                                     <p className="text-text-gray text-sm md:text-base leading-relaxed">
-                                        Experimenta máquinas de última generación y herramientas funcionales que hacen cada entrenamiento efectivo, divertido y desafiante.
+                                        Contamos con una amplia variedad de máquinas y herramientas funcionales diseñadas para hacer cada entrenamiento efectivo, divertido y desafiante.
                                     </p>
                                 </div>
                             </div>

@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'preact/hooks'
+import { GetMemberShipsPlan } from '../backend/methods/memberShips'
+import type { Membership } from '../backend/methods/memberShips'
 
 export interface Plan {
   id: string
@@ -10,60 +12,28 @@ export interface Plan {
   features: string[]
 }
 
-const PLANS: Plan[] = [
-  {
-    id: 'mes',
-    name: 'Plan Mensual',
-    description: 'Acceso completo a todas las instalaciones durante un mes',
-    price: 82000,
-    period: '/mes',
-    badge: 'El más popular',
-    features: [
-      'Acceso ilimitado al gimnasio',
-      'Todas las clases grupales',
-      'Zona de pesas y cardio',
-      'Casillero incluido',
-      'Asesoría inicial gratuita',
-    ],
-  },
-  {
-    id: 'quincena',
-    name: 'Plan Quincenal',
-    description: 'Acceso completo durante 15 días',
-    price: 48000,
-    period: '/quincena',
-    features: [
-      'Acceso ilimitado al gimnasio',
-      'Todas las clases grupales',
-      'Zona de pesas y cardio',
-      'Casillero incluido',
-    ],
-  },
-  {
-    id: 'semana',
-    name: 'Plan Semanal',
-    description: 'Entrena una semana completa sin compromiso',
-    price: 25000,
-    period: '/semana',
-    features: [
-      'Acceso ilimitado al gimnasio',
-      'Clases grupales incluidas',
-      'Zona de pesas y cardio',
-    ],
-  },
-  {
-    id: 'clase',
-    name: 'Clase Individual',
-    description: 'Paga solo por la clase que quieras asistir',
-    price: 10000,
-    period: '/clase',
-    features: [
-      'Una clase a elección',
-      'Acceso a vestuarios',
-      'Sin compromiso',
-    ],
-  },
-]
+const durationLabel = (months: number): string => {
+  if (months >= 12) return '/año'
+  if (months >= 3) return '/trimestre'
+  if (months === 1) return '/mes'
+  return `/${months} meses`
+}
+
+const mapMembershipToPlan = (m: Membership, index: number): Plan => ({
+  id: m.id,
+  name: m.name,
+  description: `Acceso completo durante ${m.durationMonths} ${m.durationMonths === 1 ? 'mes' : 'meses'}`,
+  price: m.price,
+  period: durationLabel(m.durationMonths),
+  badge: index === 0 ? 'El más popular' : undefined,
+  features: Object.keys(m.benefits).length > 0
+    ? Object.values(m.benefits).map(String)
+    : [
+        'Acceso ilimitado al gimnasio',
+        'Todas las clases grupales',
+        'Zona de pesas y cardio',
+      ],
+})
 
 interface PlanSelectorProps {
   isOpen: boolean
@@ -74,8 +44,40 @@ interface PlanSelectorProps {
 export default function PlanSelector({ isOpen, onClose, onContinue }: PlanSelectorProps) {
   const [mounted, setMounted] = useState(false)
   const [visible, setVisible] = useState(false)
-  const [selected, setSelected] = useState<string>('mes')
+  const [selected, setSelected] = useState<string>('')
   const [showBenefits, setShowBenefits] = useState<string | null>(null)
+
+  const [plans, setPlans] = useState<Plan[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Fetch memberships when modal opens
+  useEffect(() => {
+    if (!isOpen) return
+    const gymId = import.meta.env.VITE_GYM_ID ?? ''
+    if (!gymId) {
+      setError('No se encontró el ID del gimnasio.')
+      return
+    }
+    setLoading(true)
+    setError(null)
+    GetMemberShipsPlan({ gymId })
+      .then((res) => {
+        if (res.success && res.data.memberships.length > 0) {
+          const mapped = res.data.memberships
+            .filter((m) => m.isActive)
+            .map(mapMembershipToPlan)
+          setPlans(mapped)
+          setSelected(mapped[0]?.id ?? '')
+        } else {
+          setError(res.message || 'No se encontraron membresías disponibles.')
+        }
+      })
+      .catch(() => {
+        setError('Error al cargar los planes. Intenta de nuevo.')
+      })
+      .finally(() => setLoading(false))
+  }, [isOpen])
 
   useEffect(() => {
     if (isOpen) {
@@ -88,8 +90,10 @@ export default function PlanSelector({ isOpen, onClose, onContinue }: PlanSelect
       setVisible(false)
       const timer = setTimeout(() => {
         setMounted(false)
-        setSelected('mes')
+        setSelected('')
         setShowBenefits(null)
+        setPlans([])
+        setError(null)
       }, 300)
       document.body.style.overflow = ''
       return () => clearTimeout(timer)
@@ -110,7 +114,7 @@ export default function PlanSelector({ isOpen, onClose, onContinue }: PlanSelect
     new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(price)
 
   const handleContinue = () => {
-    const plan = PLANS.find((p) => p.id === selected)
+    const plan = plans.find((p) => p.id === selected)
     if (plan) onContinue(plan)
   }
 
@@ -161,8 +165,51 @@ export default function PlanSelector({ isOpen, onClose, onContinue }: PlanSelect
         </div>
 
         {/* Plans Grid */}
-        <div className="px-6 pb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {PLANS.map((plan) => {
+        <div className="px-6 pb-4">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <p className="text-text-gray-light text-sm">Cargando planes...</p>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <svg className="w-10 h-10 text-red-400/60" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                <path d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
+              <p className="text-red-400 text-sm text-center">{error}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  const gymId = import.meta.env.VITE_GYM_ID ?? ''
+                  if (!gymId) return
+                  setLoading(true)
+                  setError(null)
+                  GetMemberShipsPlan({ gymId })
+                    .then((res) => {
+                      if (res.success && res.data.memberships.length > 0) {
+                        const mapped = res.data.memberships.filter((m) => m.isActive).map(mapMembershipToPlan)
+                        setPlans(mapped)
+                        setSelected(mapped[0]?.id ?? '')
+                      } else {
+                        setError(res.message || 'No se encontraron membresías disponibles.')
+                      }
+                    })
+                    .catch(() => setError('Error al cargar los planes. Intenta de nuevo.'))
+                    .finally(() => setLoading(false))
+                }}
+                className="text-primary text-xs font-bold uppercase tracking-wider hover:text-primary-dark transition-colors"
+              >
+                Reintentar
+              </button>
+            </div>
+          ) : (
+          <div className={`grid gap-4 ${
+            plans.length === 1 ? 'grid-cols-1 max-w-sm mx-auto' :
+            plans.length === 2 ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto' :
+            plans.length === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto' :
+            'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+          }`}>
+          {plans.map((plan) => {
             const isSelected = selected === plan.id
             const benefitsOpen = showBenefits === plan.id
 
@@ -276,21 +323,24 @@ export default function PlanSelector({ isOpen, onClose, onContinue }: PlanSelect
               </div>
             )
           })}
+          </div>
+          )}
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-border mx-6" />
+        {!loading && !error && plans.length > 0 && <div className="h-px bg-border mx-6" />}
 
         {/* Footer Actions */}
+        {!loading && !error && plans.length > 0 && (
         <div className="px-6 pt-5 pb-7">
           {/* Selected plan summary */}
           {selected && (
             <div className="flex items-center justify-center gap-2 mb-5 text-sm">
               <span className="text-text-gray-light">Plan seleccionado:</span>
-              <span className="text-primary font-bold">{PLANS.find(p => p.id === selected)?.name}</span>
+              <span className="text-primary font-bold">{plans.find(p => p.id === selected)?.name}</span>
               <span className="text-text-gray-light">—</span>
               <span className="text-text-light font-bold" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-                {formatPrice(PLANS.find(p => p.id === selected)?.price ?? 0)}
+                {formatPrice(plans.find(p => p.id === selected)?.price ?? 0)}
               </span>
             </div>
           )}
@@ -326,6 +376,7 @@ export default function PlanSelector({ isOpen, onClose, onContinue }: PlanSelect
             </svg>
           </div>
         </div>
+        )}
       </div>
     </div>
   )
